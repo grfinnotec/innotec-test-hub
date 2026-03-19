@@ -1,0 +1,17 @@
+{
+  "pages": [
+    {
+      "path": "./additive-rechner/",
+      "category": "Kalkulator",
+      "tab": "Szenario-Rechner",
+      "title": {
+        "de": "Mehrwert-Berechnung Additive",
+        "en": "Added Value Calculation Additives"
+      },
+      "description": {
+        "de": "Vergleich von Preisvorteilen und Berechnung des Gesamtertrags eines neuen Geschäftsfelds.",
+        "en": "Comparison of price advantages and calculation of the total revenue of a new business field."
+      }
+    }
+  ]
+}
