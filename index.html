@@ -43,7 +43,7 @@
     /* HEADER */
     .header {
       background: var(--yellow);
-      padding: 30px;
+      padding: 28px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -53,18 +53,27 @@
       margin: 0;
       font-size: 28px;
       font-weight: 800;
+      line-height: 1.1;
     }
 
     .header p {
-      margin: 5px 0 0;
+      margin: 6px 0 0;
       font-size: 15px;
+      opacity: 0.9;
     }
 
-    .badge {
+    /* LOGO BOX */
+    .logo-box {
       background: rgba(255,255,255,0.6);
-      padding: 10px 16px;
+      padding: 8px 12px;
       border-radius: 12px;
-      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-box img {
+      height: 38px;
+      width: auto;
     }
 
     /* CONTENT */
@@ -161,7 +170,10 @@
         <h1>Innotec HTML Hub</h1>
         <p>Übersicht aller Kalkulatoren und Tools.</p>
       </div>
-      <div class="badge">INNOTEC</div>
+
+      <div class="logo-box">
+        <img src="./logo.png" alt="Innotec Logo">
+      </div>
     </div>
 
     <!-- CONTENT -->
