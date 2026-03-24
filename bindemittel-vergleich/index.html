@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#nextgen Bindemittel: Vergleich zu mineralischen Bindemitteln</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --bg: #fffbee;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #ffdd00;
+      --primary-soft: #fff7bf;
+      --primary-dark: #e0b800;
+      --border: #e8dfb0;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+      --success: #15803d;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(232, 223, 176, 0.95);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 32px 32px 20px;
+      background: var(--primary);
+      color: #1a1a1a;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-copy {
+      flex: 1 1 420px;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo img {
+      width: 150px;
+      height: auto;
+      display: block;
+    }
+
+    .header h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 28px 32px 32px;
+    }
+
+    .input-box {
+      background: #fffdf5;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) 180px auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 14px;
+      font-size: 16px;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--primary-dark);
+      box-shadow: 0 0 0 4px rgba(255, 221, 0, 0.25);
+    }
+
+    .action-btn,
+    .share-btn {
+      border: none;
+      background: #1f2937;
+      color: white;
+      border-radius: 16px;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 24px rgba(31, 41, 55, 0.15);
+      white-space: nowrap;
+    }
+
+    .action-btn:hover,
+    .share-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .result-card {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: white;
+    }
+
+    .result-card.highlight {
+      background: var(--primary-soft);
+    }
+
+    .result-header {
+      padding: 18px 20px;
+      font-size: 22px;
+      font-weight: 800;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .result-body {
+      padding: 18px 20px 20px;
+      display: grid;
+      gap: 12px;
+      overflow-x: auto;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) minmax(95px, auto) minmax(82px, auto);
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .row.total {
+      margin-top: 6px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(31, 41, 55, 0.18);
+      font-weight: 800;
+    }
+
+    .row.saving-row {
+      margin-top: 4px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(31, 41, 55, 0.18);
+      font-weight: 800;
+    }
+
+    .label-text {
+      color: var(--text);
+    }
+
+    .value {
+      min-width: 100px;
+      text-align: right;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .saving {
+      min-width: 82px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .green { color: var(--success); }
+    .red { color: var(--danger); }
+
+    .share-wrap {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+    }
+
+    @media (max-width: 980px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header, .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .header h1 {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .value,
+      .saving {
+        text-align: left;
+      }
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+
+      .card {
+        box-shadow: none;
+      }
+
+      .share-wrap,
+      .action-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="pdfContent">
+      <div class="header">
+        <div class="header-copy">
+          <h1>#nextgen Bindemittel: Vergleich zu mineralischen Bindemitteln</h1>
+          <p>Vergleiche mineralisches Bindemittel mit INTOOL 3 kg und INTOOL 6 kg auf Basis von Material-, Arbeits- und Entsorgungskosten.</p>
+        </div>
+        <div class="brand-logo" aria-label="Innotec Logo">
+          <img src="https://www.innotec.at/skin/frontend/boilerplate/innotec/images/logo.svg" alt="Innotec" />
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="input-box">
+          <div class="input-grid">
+            <div class="field">
+              <label for="liter">Leckagemenge in Liter</label>
+              <input id="liter" type="text" inputmode="numeric" value="30" />
+            </div>
+            <button class="action-btn" id="calcBtn" type="button">Berechnen</button>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <section class="result-card" id="card-mineral">
+            <div class="result-header">Mineralisches Bindemittel</div>
+            <div class="result-body">
+              <div class="row"><span class="label-text">Materialkosten</span><span class="value" id="mat_mineral"></span><span class="saving"></span></div>
+              <div class="row"><span class="label-text">Weitere Kosten</span><span class="value" id="weitere_mineral"></span><span class="saving"></span></div>
+              <div class="row"><span class="label-text">Arbeitskosten</span><span class="value" id="arbeit_mineral"></span><span class="saving"></span></div>
+              <div class="row"><span class="label-text">Entsorgungskosten</span><span class="value" id="entsorgung_mineral"></span><span class="saving"></span></div>
+              <div class="row total"><span class="label-text">Gesamtkosten</span><span class="value" id="gesamt_mineral"></span><span class="saving"></span></div>
+            </div>
+          </section>
+
+          <section class="result-card highlight" id="card-3kg">
+            <div class="result-header">INTOOL Bindemittel 3 kg</div>
+            <div class="result-body">
+              <div class="row"><span class="label-text">Materialkosten</span><span class="value" id="mat_3kg"></span><span class="saving" id="diff_mat_3kg"></span></div>
+              <div class="row"><span class="label-text">Weitere Kosten</span><span class="value" id="weitere_3kg"></span><span class="saving" id="diff_weit_3kg"></span></div>
+              <div class="row"><span class="label-text">Arbeitskosten</span><span class="value" id="arbeit_3kg"></span><span class="saving" id="diff_arbeit_3kg"></span></div>
+              <div class="row"><span class="label-text">Entsorgungskosten</span><span class="value" id="entsorgung_3kg"></span><span class="saving" id="diff_entsorgung_3kg"></span></div>
+              <div class="row total"><span class="label-text">Gesamtkosten</span><span class="value" id="gesamt_3kg"></span><span class="saving" id="diff_gesamt_3kg"></span></div>
+              <div class="row saving-row"><span class="label-text green">Ersparnis</span><span class="value green" id="ersparnis_3kg"></span><span class="saving"></span></div>
+            </div>
+          </section>
+
+          <section class="result-card highlight" id="card-6kg">
+            <div class="result-header">INTOOL Bindemittel 6 kg</div>
+            <div class="result-body">
+              <div class="row"><span class="label-text">Materialkosten</span><span class="value" id="mat_6kg"></span><span class="saving" id="diff_mat_6kg"></span></div>
+              <div class="row"><span class="label-text">Weitere Kosten</span><span class="value" id="weitere_6kg"></span><span class="saving" id="diff_weit_6kg"></span></div>
+              <div class="row"><span class="label-text">Arbeitskosten</span><span class="value" id="arbeit_6kg"></span><span class="saving" id="diff_arbeit_6kg"></span></div>
+              <div class="row"><span class="label-text">Entsorgungskosten</span><span class="value" id="entsorgung_6kg"></span><span class="saving" id="diff_entsorgung_6kg"></span></div>
+              <div class="row total"><span class="label-text">Gesamtkosten</span><span class="value" id="gesamt_6kg"></span><span class="saving" id="diff_gesamt_6kg"></span></div>
+              <div class="row saving-row"><span class="label-text green">Ersparnis</span><span class="value green" id="ersparnis_6kg"></span><span class="saving"></span></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="share-wrap">
+          <button class="share-btn" id="sharePdfBtn" type="button">Formular als PDF teilen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const arbeitskosten_h = 41.30;
+    const schwellen_ma = [1, 5, 10, 20, 50, 100, 99999];
+    const schwellen_g = [1, 5, 10, 20, 50, 99999];
+    const schwellen_heran = [1, 5, 10, 20, 50, 99999];
+    const schwellen_ausbringen = schwellen_heran;
+    const schwellen_warten = schwellen_heran;
+    const schwellen_aufnahme = schwellen_heran;
+
+    const daten = {
+      mineralisch: {
+        mitarbeiter: [1,1,2,2,3,4,5],
+        arbeitsgaenge: [1,1,2,2,3,4],
+        herantragen: [2,4,6,9,15,20],
+        ausbringen: [5,12,20,35,55,80],
+        wartezeit: [5,8,12,15,20,30],
+        aufnahme: [4,7.5,12.5,20,32.5,60]
+      },
+      intool3: {
+        mitarbeiter: [1,1,1,1,1,2,3],
+        arbeitsgaenge: [1,1,1,1,1,1],
+        herantragen: [2,2,2,2,2,2],
+        ausbringen: [1,4,9,17.5,27.5,27.5],
+        wartezeit: [0.75,0.75,0.75,0.75,0.75,0.75],
+        aufnahme: [1,2,4,6,8,8]
+      },
+      intool6: {
+        mitarbeiter: [1,1,1,1,1,2,3],
+        arbeitsgaenge: [1,1,1,1,1,1],
+        herantragen: [2,2,2,2,2,2],
+        ausbringen: [1,4,9,17.5,27.5,27.5],
+        wartezeit: [1.5,1.5,1.5,1.5,1.5,1.5],
+        aufnahme: [2,4,6,8,10,10]
+      }
+    };
+
+    const literInput = document.getElementById('liter');
+    const calcBtn = document.getElementById('calcBtn');
+    const sharePdfBtn = document.getElementById('sharePdfBtn');
+
+    function getWert(liter, schwellen, arr) {
+      for (let i = schwellen.length - 1; i >= 0; i--) {
+        if (liter >= schwellen[i]) return arr[i];
+      }
+      return arr[0];
+    }
+
+    function berechneArbeitskosten(liter, typ) {
+      const d = daten[typ];
+      const ma = getWert(liter, schwellen_ma, d.mitarbeiter);
+      const g = getWert(liter, schwellen_g, d.arbeitsgaenge);
+      const min =
+        getWert(liter, schwellen_heran, d.herantragen) +
+        getWert(liter, schwellen_ausbringen, d.ausbringen) +
+        getWert(liter, schwellen_warten, d.wartezeit) +
+        getWert(liter, schwellen_aufnahme, d.aufnahme);
+
+      let zeit_h, kosten;
+      if (typ === 'mineralisch') {
+        zeit_h = (min * g) / 60;
+        kosten = zeit_h * ma * arbeitskosten_h;
+      } else {
+        zeit_h = (min * ma) / 60;
+        kosten = zeit_h * arbeitskosten_h;
+      }
+      return kosten;
+    }
+
+    const formatCurrency = (val) => new Intl.NumberFormat('de-AT', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(val);
+
+    const formatNumber = (val) => new Intl.NumberFormat('de-AT', {
+      maximumFractionDigits: 0
+    }).format(val);
+
+    const formatPercent = (val) => {
+      if (isNaN(val) || !isFinite(val)) return '';
+      return (val >= 0 ? '-' : '+') + Math.round(Math.abs(val)).toString() + ' %';
+    };
+
+    const parseFormattedNumber = (value) => {
+      const normalized = String(value).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    const setText = (id, text) => {
+      document.getElementById(id).textContent = text;
+    };
+
+    const setSavingClass = (id, isBetter) => {
+      const el = document.getElementById(id);
+      el.className = 'saving ' + (isBetter ? 'green' : 'red');
+    };
+
+    function calculate() {
+      const entsorgung_gefährlich = 0.93;
+      const lagerkosten_kg = 0.03;
+      const transport_beschaffung = 0.40;
+      const transport_entsorgung = 0.25;
+      const liter = parseFormattedNumber(literInput.value);
+
+      const arbeitskosten_mineral = berechneArbeitskosten(liter, 'mineralisch');
+      const aufnahme_mineral = 0.80;
+      const arbeitskosten_3kg = berechneArbeitskosten(liter, 'intool3');
+      const aufnahme_3kg = 6.5;
+      const preis_pro_kg_3 = 19.97;
+      const arbeitskosten_6kg = berechneArbeitskosten(liter, 'intool6');
+      const aufnahme_6kg = 5.25;
+      const preis_pro_kg_6 = 14.976;
+
+      const preis_pro_sack = 39.90;
+      const preis_pro_kg = preis_pro_sack / 20.0;
+      const menge_mineral = liter / aufnahme_mineral;
+      const mat_m = menge_mineral * preis_pro_kg;
+      const weit_m = menge_mineral * (lagerkosten_kg + transport_beschaffung);
+      const arbeit_m = arbeitskosten_mineral;
+      const gesamtmasse_mineral = menge_mineral + liter;
+      const entsorgungskosten_mineral = gesamtmasse_mineral * entsorgung_gefährlich;
+      const entsorgung_transport_mineral = gesamtmasse_mineral * transport_entsorgung;
+      const entsorg = entsorgungskosten_mineral + entsorgung_transport_mineral;
+      const gesamt_m = mat_m + weit_m + arbeit_m + entsorg;
+
+      setText('mat_mineral', formatCurrency(mat_m));
+      setText('weitere_mineral', formatCurrency(weit_m));
+      setText('arbeit_mineral', formatCurrency(arbeit_m));
+      setText('entsorgung_mineral', formatCurrency(entsorg));
+      setText('gesamt_mineral', formatCurrency(gesamt_m));
+
+      const menge_3kg = liter / aufnahme_3kg;
+      const mat_3 = menge_3kg * preis_pro_kg_3;
+      const weit_3 = menge_3kg * (lagerkosten_kg + transport_beschaffung);
+      const arbeit_3 = arbeitskosten_3kg;
+      const gesamtmasse_3 = menge_3kg + liter;
+      const entsorg_3 = gesamtmasse_3 * (entsorgung_gefährlich + transport_entsorgung);
+      const gesamt_3 = mat_3 + weit_3 + arbeit_3 + entsorg_3;
+
+      setText('mat_3kg', formatCurrency(mat_3));
+      setText('weitere_3kg', formatCurrency(weit_3));
+      setText('arbeit_3kg', formatCurrency(arbeit_3));
+      setText('entsorgung_3kg', formatCurrency(entsorg_3));
+      setText('gesamt_3kg', formatCurrency(gesamt_3));
+
+      const menge_6kg = liter / aufnahme_6kg;
+      const mat_6 = menge_6kg * preis_pro_kg_6;
+      const weit_6 = menge_6kg * (lagerkosten_kg + transport_beschaffung);
+      const arbeit_6 = arbeitskosten_6kg;
+      const gesamtmasse_6 = menge_6kg + liter;
+      const entsorg_6 = gesamtmasse_6 * (entsorgung_gefährlich + transport_entsorgung);
+      const gesamt_6 = mat_6 + weit_6 + arbeit_6 + entsorg_6;
+
+      setText('mat_6kg', formatCurrency(mat_6));
+      setText('weitere_6kg', formatCurrency(weit_6));
+      setText('arbeit_6kg', formatCurrency(arbeit_6));
+      setText('entsorgung_6kg', formatCurrency(entsorg_6));
+      setText('gesamt_6kg', formatCurrency(gesamt_6));
+
+      const diff_mat_3 = ((mat_m - mat_3) / mat_m) * 100;
+      const diff_weit_3 = ((weit_m - weit_3) / weit_m) * 100;
+      const diff_arbeit_3 = ((arbeit_m - arbeit_3) / arbeit_m) * 100;
+      const diff_gesamt_3 = ((gesamt_m - gesamt_3) / gesamt_m) * 100;
+      const diff_entsorg_3 = ((entsorg - entsorg_3) / entsorg) * 100;
+
+      setText('diff_mat_3kg', formatPercent(diff_mat_3));
+      setText('diff_weit_3kg', formatPercent(diff_weit_3));
+      setText('diff_arbeit_3kg', formatPercent(diff_arbeit_3));
+      setText('diff_gesamt_3kg', formatPercent(diff_gesamt_3));
+      setText('diff_entsorgung_3kg', formatPercent(diff_entsorg_3));
+      setSavingClass('diff_mat_3kg', mat_3 < mat_m);
+      setSavingClass('diff_weit_3kg', weit_3 < weit_m);
+      setSavingClass('diff_arbeit_3kg', arbeit_3 < arbeit_m);
+      setSavingClass('diff_gesamt_3kg', gesamt_3 < gesamt_m);
+      setSavingClass('diff_entsorgung_3kg', diff_entsorg_3 > 0);
+
+      const diff_mat_6 = ((mat_m - mat_6) / mat_m) * 100;
+      const diff_weit_6 = ((weit_m - weit_6) / weit_m) * 100;
+      const diff_arbeit_6 = ((arbeit_m - arbeit_6) / arbeit_m) * 100;
+      const diff_gesamt_6 = ((gesamt_m - gesamt_6) / gesamt_m) * 100;
+      const diff_entsorg_6 = ((entsorg - entsorg_6) / entsorg) * 100;
+
+      setText('diff_mat_6kg', formatPercent(diff_mat_6));
+      setText('diff_weit_6kg', formatPercent(diff_weit_6));
+      setText('diff_arbeit_6kg', formatPercent(diff_arbeit_6));
+      setText('diff_gesamt_6kg', formatPercent(diff_gesamt_6));
+      setText('diff_entsorgung_6kg', formatPercent(diff_entsorg_6));
+      setSavingClass('diff_mat_6kg', mat_6 < mat_m);
+      setSavingClass('diff_weit_6kg', weit_6 < weit_m);
+      setSavingClass('diff_arbeit_6kg', arbeit_6 < arbeit_m);
+      setSavingClass('diff_gesamt_6kg', gesamt_6 < gesamt_m);
+      setSavingClass('diff_entsorgung_6kg', diff_entsorg_6 > 0);
+
+      const ersparnis_3 = gesamt_m - gesamt_3;
+      const ersparnis_6 = gesamt_m - gesamt_6;
+      setText('ersparnis_3kg', formatCurrency(ersparnis_3));
+      setText('ersparnis_6kg', formatCurrency(ersparnis_6));
+    }
+
+    literInput.addEventListener('input', () => {
+      const raw = literInput.value.replace(/[^0-9]/g, '');
+      literInput.value = raw ? formatNumber(Number(raw)) : '';
+    });
+
+    literInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        calculate();
+      }
+    });
+
+    calcBtn.addEventListener('click', calculate);
+
+    window.addEventListener('load', calculate);
+
+    sharePdfBtn.addEventListener('click', async () => {
+      const content = document.getElementById('pdfContent');
+      const filename = 'Bindemittel-Kostenrechner.pdf';
+
+      try {
+        sharePdfBtn.disabled = true;
+        sharePdfBtn.textContent = 'PDF wird erstellt...';
+
+        const canvas = await html2canvas(content, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 8;
+        const usableWidth = pageWidth - margin * 2;
+        const imgHeight = canvas.height * usableWidth / canvas.width;
+
+        if (imgHeight <= pageHeight - margin * 2) {
+          pdf.addImage(imgData, 'JPEG', margin, margin, usableWidth, imgHeight);
+        } else {
+          let heightLeft = imgHeight;
+          let position = margin;
+          pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
+          heightLeft -= (pageHeight - margin * 2);
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight + margin;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
+            heightLeft -= (pageHeight - margin * 2);
+          }
+        }
+
+        pdf.save(filename);
+      } catch (error) {
+        console.error('PDF-Erstellung fehlgeschlagen:', error);
+        alert('Die PDF-Erstellung hat leider nicht funktioniert. Bitte die Seite neu laden und erneut probieren.');
+      } finally {
+        sharePdfBtn.disabled = false;
+        sharePdfBtn.textContent = 'Formular als PDF teilen';
+      }
+    });
+  </script>
+</body>
+</html>
