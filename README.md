@@ -15,11 +15,21 @@ Alle Seiten werden über eine gemeinsame Startseite bereitgestellt und können d
 ### 🔧 Funktionsumfang
 
 - Übersicht aller HTML-Seiten in Kartenansicht
-- Kategorien & Tabs (z. B. Kalkulatoren, Szenarien)
+- Kategorien & Tabs (z. B. Material, Vergleich, Szenario-Rechner)
 - Suchfunktion
 - Sprachumschaltung (DE / EN)
 - Zentrale Pflege über `pages.json`
 - Hosting über GitHub Pages
+
+---
+
+### 📄 Aktuell enthaltene Tools
+
+- Mehrwert-Berechnung Additive
+- Materialrechner PV
+- Bindemittel Vergleich
+- Materialrechner Projekt
+- Bindemittel Kostenvergleich
 
 ---
 
@@ -29,5 +39,9 @@ Alle Seiten werden über eine gemeinsame Startseite bereitgestellt und können d
 index.html
 pages.json
 logo.png
+
 additive-rechner/
-  index.html
+materialrechner-pv/
+bindemittel-vergleich/
+materialrechner-projekt/
+bindemittel-kostenvergleich/
