@@ -12,6 +12,62 @@
         "de": "Vergleich von Preisvorteilen und Berechnung des Gesamtertrags eines neuen Geschäftsfelds.",
         "en": "Comparison of price advantages and calculation of the total revenue of a new business field."
       }
+    },
+
+    {
+      "path": "./materialrechner-pv/",
+      "category": "Kalkulator",
+      "tab": "Material",
+      "title": {
+        "de": "Materialrechner PV",
+        "en": "Material Calculator PV"
+      },
+      "description": {
+        "de": "Berechnung von Materialien für PV-Anwendungen.",
+        "en": "Material calculation for PV applications."
+      }
+    },
+
+    {
+      "path": "./bindemittel-vergleich/",
+      "category": "Kalkulator",
+      "tab": "Vergleich",
+      "title": {
+        "de": "Bindemittel Vergleich",
+        "en": "Binder Comparison"
+      },
+      "description": {
+        "de": "Vergleich verschiedener Bindemittel.",
+        "en": "Comparison of different binders."
+      }
+    },
+
+    {
+      "path": "./materialrechner-projekt/",
+      "category": "Kalkulator",
+      "tab": "Material",
+      "title": {
+        "de": "Materialrechner Projekt",
+        "en": "Material Calculator Project"
+      },
+      "description": {
+        "de": "Projektbezogene Materialberechnung.",
+        "en": "Project-based material calculation."
+      }
+    },
+
+    {
+      "path": "./bindemittel-kostenvergleich/",
+      "category": "Kalkulator",
+      "tab": "Vergleich",
+      "title": {
+        "de": "Bindemittel Kostenvergleich",
+        "en": "Binder Cost Comparison"
+      },
+      "description": {
+        "de": "Kostenvergleich verschiedener Bindemittel.",
+        "en": "Cost comparison of different binders."
+      }
     }
   ]
 }
