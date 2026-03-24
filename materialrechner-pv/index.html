@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PV-Materialrechner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --bg: #fffbee;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #ffdd00;
+      --primary-dark: #e0b800;
+      --primary-soft: #fff7bf;
+      --border: #e8dfb0;
+      --success: #0f766e;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(232, 223, 176, 0.95);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 32px 32px 20px;
+      background: var(--primary);
+      color: #1a1a1a;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-copy {
+      flex: 1 1 420px;
+    }
+
+    .brand-logo {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+      border: none;
+    }
+
+    .brand-logo img {
+      width: 150px;
+      height: auto;
+      display: block;
+    }
+
+    .header h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 28px 32px 32px;
+    }
+
+    .setup-box {
+      background: #fffdf5;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px) auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 14px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: var(--primary-dark);
+      box-shadow: 0 0 0 4px rgba(255, 221, 0, 0.25);
+    }
+
+    .unit-box {
+      height: 50px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 4px;
+      border-radius: 0;
+      background: transparent;
+      border: none;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: white;
+    }
+
+    th, td {
+      padding: 16px 18px;
+      border-bottom: 1px solid #efe7be;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    thead th {
+      background: #fff8d6;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #5f4b00;
+    }
+
+    tbody tr:hover {
+      background: #fffef7;
+    }
+
+    .product-name {
+      font-weight: 700;
+    }
+
+    .toggle-cell {
+      text-align: center;
+      width: 120px;
+    }
+
+    .toggle {
+      width: 22px;
+      height: 22px;
+      accent-color: #1f2937;
+      cursor: pointer;
+    }
+
+    .result-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 90px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #1a1a1a;
+      font-weight: 800;
+    }
+
+    .result-empty {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+
+    .share-wrap {
+      margin-top: 26px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .share-btn {
+      border: none;
+      background: #1f2937;
+      color: white;
+      border-radius: 16px;
+      padding: 16px 26px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 24px rgba(31, 41, 55, 0.15);
+    }
+
+    .share-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 760px) {
+      .setup-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header, .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .header h1 {
+        font-size: 26px;
+      }
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+
+      .card {
+        box-shadow: none;
+      }
+
+      .share-wrap {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="pdfContent">
+      <div class="header">
+        <div class="header-copy">
+          <h1>PV-Materialrechner</h1>
+          <p>Berechne den Materialbedarf je Produkt auf Basis der angegebenen Laufmeter und aktiviere nur die Positionen, die du wirklich brauchst.</p>
+        </div>
+        <div class="brand-logo" aria-label="Innotec Logo">
+          <img src="https://www.innotec.at/skin/frontend/boilerplate/innotec/images/logo.svg" alt="Innotec" />
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="setup-box">
+          <div class="setup-grid">
+            <div class="field">
+              <label for="meters">Verklebung</label>
+              <input id="meters" type="text" inputmode="numeric" value="500" placeholder="z. B. 1.800" />
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div class="unit-box">Laufmeter</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table aria-label="PV-Materialrechner">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th class="toggle-cell">Rechnen?</th>
+                <th>Bedarf in Stk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="product-name">Beutel</td>
+                <td class="toggle-cell"><input type="checkbox" class="toggle" data-product="Beutel" checked></td>
+                <td><span class="result-pill result-empty" data-result="Beutel">–</span></td>
+              </tr>
+              <tr>
+                <td class="product-name">Kartuschen</td>
+                <td class="toggle-cell"><input type="checkbox" class="toggle" data-product="Kartuschen"></td>
+                <td><span class="result-pill result-empty" data-result="Kartuschen">–</span></td>
+              </tr>
+              <tr>
+                <td class="product-name">Multi Wipes</td>
+                <td class="toggle-cell"><input type="checkbox" class="toggle" data-product="Multi Wipes" checked></td>
+                <td><span class="result-pill result-empty" data-result="Multi Wipes">–</span></td>
+              </tr>
+              <tr>
+                <td class="product-name">Multisol Project 1L</td>
+                <td class="toggle-cell"><input type="checkbox" class="toggle" data-product="Multisol Project-1"></td>
+                <td><span class="result-pill result-empty" data-result="Multisol Project-1">–</span></td>
+              </tr>
+              <tr>
+                <td class="product-name">Multisol Project 5L</td>
+                <td class="toggle-cell"><input type="checkbox" class="toggle" data-product="Multisol Project-2" checked></td>
+                <td><span class="result-pill result-empty" data-result="Multisol Project-2">–</span></td>
+              </tr>
+              <tr>
+                <td class="product-name">Seal Guard</td>
+                <td class="toggle-cell"><input type="checkbox" class="toggle" data-product="Seal Guard"></td>
+                <td><span class="result-pill result-empty" data-result="Seal Guard">–</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="share-wrap">
+          <button class="share-btn" id="sharePdfBtn">Formular als PDF teilen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const formulas = {
+      'Beutel': (meters) => Math.ceil(meters * (1 / 13)),
+      'Kartuschen': (meters) => Math.ceil(meters * (1 / 6.7)),
+      'Multi Wipes': (meters) => Math.ceil(meters * Number((1 / 400.7).toFixed(3))),
+      'Multisol Project-1': (meters) => Math.ceil(meters * 0.01),
+      'Multisol Project-2': (meters) => Math.ceil(meters * 0.002),
+      'Seal Guard': (meters) => Math.ceil(meters * 0.022)
+    };
+
+    const metersInput = document.getElementById('meters');
+    const checkboxes = Array.from(document.querySelectorAll('.toggle'));
+    const sharePdfBtn = document.getElementById('sharePdfBtn');
+
+    const formatIntegerDisplay = (value) => {
+      return new Intl.NumberFormat('de-AT', { maximumFractionDigits: 0 }).format(value);
+    };
+
+    const parseFormattedNumber = (value) => {
+      if (!value) return 0;
+      const normalized = value.replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    const updateResultState = (el, value, active) => {
+      if (!active) {
+        el.textContent = '–';
+        el.classList.add('result-empty');
+        return;
+      }
+      el.textContent = String(value);
+      el.classList.remove('result-empty');
+    };
+
+    const calcOne = (productKey) => {
+      const meters = parseFormattedNumber(metersInput.value);
+      const resultEl = document.querySelector(`[data-result="${productKey}"]`);
+      const checkboxEl = document.querySelector(`input[data-product="${productKey}"]`);
+      const shouldCalc = checkboxEl && checkboxEl.checked;
+
+      if (!shouldCalc) {
+        updateResultState(resultEl, '–', false);
+        return;
+      }
+
+      const fn = formulas[productKey];
+      const val = fn ? fn(meters) : 0;
+      updateResultState(resultEl, Math.max(0, Math.round(val)), true);
+    };
+
+    const calcAll = () => {
+      Object.keys(formulas).forEach(calcOne);
+    };
+
+    metersInput.addEventListener('input', () => {
+      const raw = metersInput.value.replace(/[^0-9]/g, '');
+      metersInput.value = raw ? formatIntegerDisplay(Number(raw)) : '';
+      calcAll();
+    });
+
+    checkboxes.forEach(cb => cb.addEventListener('change', () => calcOne(cb.dataset.product)));
+
+    calcAll();
+
+    sharePdfBtn.addEventListener('click', async () => {
+      const content = document.getElementById('pdfContent');
+      const filename = 'PV-Materialrechner.pdf';
+
+      try {
+        sharePdfBtn.disabled = true;
+        sharePdfBtn.textContent = 'PDF wird erstellt...';
+
+        const canvas = await html2canvas(content, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 8;
+        const usableWidth = pageWidth - margin * 2;
+        const imgHeight = canvas.height * usableWidth / canvas.width;
+
+        if (imgHeight <= pageHeight - margin * 2) {
+          pdf.addImage(imgData, 'JPEG', margin, margin, usableWidth, imgHeight);
+        } else {
+          let heightLeft = imgHeight;
+          let position = margin;
+          pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
+          heightLeft -= (pageHeight - margin * 2);
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight + margin;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
+            heightLeft -= (pageHeight - margin * 2);
+          }
+        }
+
+        pdf.save(filename);
+      } catch (error) {
+        console.error('PDF-Erstellung fehlgeschlagen:', error);
+        alert('Die PDF-Erstellung hat leider nicht funktioniert. Bitte die Seite neu laden und erneut probieren.');
+      } finally {
+        sharePdfBtn.disabled = false;
+        sharePdfBtn.textContent = 'Formular als PDF teilen';
+      }
+    });
+  </script>
+</body>
+</html>
