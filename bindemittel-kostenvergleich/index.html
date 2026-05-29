@@ -514,19 +514,19 @@
                 <td class="innotec-col">
                   <select id="dropdown-fein15">
                     <option>Ab 1</option>
-                    <option>Ab 4</option>
+                    <option selected>Ab 4</option>
                   </select>
                 </td>
                 <td class="innotec-col">
                   <select id="dropdown-fein30">
                     <option>Ab 1</option>
-                    <option>Ab 2</option>
+                    <option selected>Ab 2</option>
                   </select>
                 </td>
                 <td class="innotec-col">
                   <select id="dropdown-grob60">
                     <option>Ab 1</option>
-                    <option>Ab 2</option>
+                    <option selected>Ab 2</option>
                   </select>
                 </td>
                 <td class="competitor-col"></td>
@@ -549,7 +549,7 @@
                 <td class="competitor-col" id="eurkg-5">45,00</td>
               </tr>
               <tr>
-                <td>€ / L Aufnahme min.</td>
+                <td>€ / L Aufnahme max.</td>
                 <td class="innotec-col" id="eurlmin-1">5,32</td>
                 <td class="innotec-col" id="eurlmin-2">3,99</td>
                 <td class="innotec-col" id="eurlmin-3">3,74</td>
@@ -557,7 +557,7 @@
                 <td class="competitor-col" id="eurlmin-5">7,50</td>
               </tr>
               <tr>
-                <td>€ / L Aufnahme max.</td>
+                <td>€ / L Aufnahme min.</td>
                 <td class="innotec-col" id="eurlmax-1">3,33</td>
                 <td class="innotec-col" id="eurlmax-2">2,50</td>
                 <td class="innotec-col" id="eurlmax-3">2,38</td>
@@ -697,8 +697,8 @@
       max: 'Aufnahme L/kg max',
       preisStk: '€ / Stk',
       preisKg: '€ / kg',
-      preisLMin: '€ / L Aufnahme min.',
-      preisLMax: '€ / L Aufnahme max.',
+      preisLMin: '€ / L Aufnahme max.',
+      preisLMax: '€ / L Aufnahme min.',
       kgBedarf: 'kg Bedarf',
       bindemittel: '€ Bindemittel',
       entsorgung: '€ Entsorgung',
@@ -765,9 +765,15 @@
       results: {}
     };
 
+    const defaultTiers = {
+      fein15: 'Ab 4',
+      fein30: 'Ab 2',
+      grob60: 'Ab 2'
+    };
+
     products.forEach((product) => {
       if (product.tiers) {
-        product.selectedTier = Object.keys(product.tiers)[0];
+        product.selectedTier = defaultTiers[product.key] || Object.keys(product.tiers)[0];
       }
     });
 
