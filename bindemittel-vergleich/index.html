@@ -97,6 +97,17 @@
       margin-bottom: 24px;
     }
 
+    .notice-box {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff8d6;
+      border: 1px solid var(--border);
+      font-size: 15px;
+      font-weight: 700;
+      color: #5f4b00;
+    }
+
     .input-grid {
       display: grid;
       grid-template-columns: minmax(240px, 1fr) 180px auto;
@@ -153,7 +164,7 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(320px, 1fr));
+      grid-template-columns: repeat(3, minmax(280px, 1fr));
       gap: 20px;
     }
 
@@ -179,7 +190,7 @@
       padding: 18px 20px 20px;
       display: grid;
       gap: 12px;
-      overflow-x: auto;
+      overflow: hidden;
     }
 
     .row {
@@ -241,6 +252,11 @@
         grid-template-columns: 1fr;
       }
 
+      .action-btn,
+      .share-btn {
+        width: 100%;
+      }
+
       .header, .content {
         padding-left: 20px;
         padding-right: 20px;
@@ -252,6 +268,25 @@
     }
 
     @media (max-width: 420px) {
+      body {
+        padding: 14px 8px;
+      }
+
+      .header,
+      .content {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .result-header {
+        font-size: 19px;
+        padding: 16px;
+      }
+
+      .result-body {
+        padding: 16px;
+      }
+
       .row {
         grid-template-columns: 1fr;
         gap: 4px;
@@ -260,6 +295,7 @@
       .value,
       .saving {
         text-align: left;
+        min-width: 0;
       }
     }
 
@@ -294,6 +330,8 @@
       </div>
 
       <div class="content">
+        <div class="notice-box">Preisberechnung auf Basis einer VKE-Abnahme</div>
+
         <div class="input-box">
           <div class="input-grid">
             <div class="field">
@@ -458,10 +496,10 @@
       const aufnahme_mineral = 0.80;
       const arbeitskosten_3kg = berechneArbeitskosten(liter, 'intool3');
       const aufnahme_3kg = 6.5;
-      const preis_pro_kg_3 = 19.97;
+      const preis_pro_kg_3 = 14.63;
       const arbeitskosten_6kg = berechneArbeitskosten(liter, 'intool6');
       const aufnahme_6kg = 5.25;
-      const preis_pro_kg_6 = 14.976;
+      const preis_pro_kg_6 = 11.65;
 
       const preis_pro_sack = 39.90;
       const preis_pro_kg = preis_pro_sack / 20.0;
