@@ -19,6 +19,7 @@
       --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
       --radius: 22px;
       --gray-col: #f3f4f6;
+      --gray-border: #d1d5db;
     }
 
     * { box-sizing: border-box; }
@@ -86,9 +87,44 @@
       padding: 28px 32px 32px;
     }
 
+    .info-block {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      padding: 20px 22px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #fff8d6;
+    }
+
+    .info-eyebrow {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #7c6500;
+    }
+
+    .info-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.05;
+    }
+
+    .info-copy {
+      margin: 6px 0 0;
+      font-size: 15px;
+      color: #4b5563;
+    }
+
     .toolbar {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(280px, 420px);
       gap: 16px;
       margin-bottom: 22px;
       align-items: end;
@@ -132,7 +168,7 @@
       border-radius: 10px;
       font-size: 15px;
       text-align: center;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--gray-border);
       background: #fff;
     }
 
@@ -151,27 +187,6 @@
 
     .share-btn:hover {
       transform: translateY(-1px);
-    }
-
-    .meta-row {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 18px;
-      padding: 0;
-      border-radius: 0;
-      background: transparent;
-      border: none;
-      font-size: 15px;
-    }
-
-    .meta-row strong {
-      background: transparent;
-      border-radius: 0;
-      padding: 0;
-      min-width: auto;
-      text-align: left;
-      font-weight: 400;
     }
 
     .table-wrap {
@@ -207,6 +222,10 @@
       text-align: left;
       min-width: 190px;
       font-weight: 700;
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #fffdf2;
     }
 
     .innotec-col {
@@ -242,6 +261,117 @@
       background: #e5e7eb;
     }
 
+    .mobile-cards {
+      display: none;
+      gap: 16px;
+    }
+
+    .mobile-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+    }
+
+    .mobile-card.innotec {
+      background: #fffdf1;
+    }
+
+    .mobile-card.competitor {
+      background: #fafafa;
+    }
+
+    .mobile-card-header {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(232, 223, 176, 0.9);
+    }
+
+    .mobile-card-header h2 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.15;
+    }
+
+    .mobile-card-type {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: #6b7280;
+    }
+
+    .mobile-card-body {
+      padding: 16px 18px 18px;
+    }
+
+    .mobile-card-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mobile-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(100px, 120px);
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(232, 223, 176, 0.7);
+    }
+
+    .mobile-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .mobile-row-label {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .mobile-row-value {
+      text-align: right;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .mobile-section {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(232, 223, 176, 0.9);
+    }
+
+    .mobile-section-title {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: #7c6500;
+    }
+
+    .mobile-highlight {
+      background: #fff8d6;
+      margin: 14px -10px 0;
+      padding: 10px;
+      border-radius: 14px;
+    }
+
+    .mobile-highlight.competitor {
+      background: #eceff3;
+    }
+
+    .mobile-row-control input,
+    .mobile-row-control select {
+      text-align: right;
+      padding: 10px 12px;
+      font-size: 15px;
+      min-height: 44px;
+    }
+
     .share-wrap {
       margin-top: 24px;
       display: flex;
@@ -254,14 +384,52 @@
       }
     }
 
+    @media (max-width: 860px) {
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: grid;
+      }
+    }
+
     @media (max-width: 640px) {
-      .header, .content {
-        padding-left: 20px;
-        padding-right: 20px;
+      body {
+        padding: 16px 10px;
+      }
+
+      .header,
+      .content {
+        padding-left: 18px;
+        padding-right: 18px;
       }
 
       .header h1 {
         font-size: 26px;
+      }
+
+      .brand-logo img {
+        width: 126px;
+      }
+
+      .info-block {
+        padding: 18px;
+      }
+
+      .info-title {
+        font-size: 26px;
+      }
+
+      .mobile-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .mobile-row-value,
+      .mobile-row-control input,
+      .mobile-row-control select {
+        text-align: left;
       }
     }
 
@@ -278,7 +446,7 @@
       <div class="header">
         <div class="header-copy">
           <h1>#nextgen Bindemittel: Liter-Kostenvergleich</h1>
-          <p>Vergleiche Innotec-Gebinde mit einem Mitbewerber anhand von Aufnahmeleistung, Bindemittelkosten und Entsorgungskosten.</p>
+          <p>Vergleiche Innotec-Gebinde mit Mitbewerbern anhand von Aufnahmeleistung, Bindemittelkosten und Entsorgungskosten.</p>
         </div>
         <div class="brand-logo" aria-label="Innotec Logo">
           <img src="https://www.innotec.at/skin/frontend/boilerplate/innotec/images/logo.svg" alt="Innotec" />
@@ -286,9 +454,12 @@
       </div>
 
       <div class="content">
-        <div class="meta-row">
-          <span>Bsp. bei Leckageliter:</span>
-          <strong>10</strong>
+        <div class="info-block">
+          <div>
+            <span class="info-eyebrow">Rechenbasis</span>
+            <h2 class="info-title">Bsp. bei Leckageliter: 10</h2>
+            <p class="info-copy">Die Kosten bei 100 L Leckage werden konsistent aus diesem 10-L-Beispiel hochgerechnet.</p>
+          </div>
         </div>
 
         <div class="toolbar">
@@ -296,7 +467,6 @@
             <label for="entsorgungskosten">Entsorgungskosten je kg (€)</label>
             <input id="entsorgungskosten" type="text" inputmode="decimal" value="1,50" />
           </div>
-          
         </div>
 
         <div class="table-wrap">
@@ -344,22 +514,19 @@
                 <td class="innotec-col">
                   <select id="dropdown-fein15">
                     <option>Ab 1</option>
-                    <option>Ab 8</option>
-                    <option>Ab 100</option>
+                    <option>Ab 4</option>
                   </select>
                 </td>
                 <td class="innotec-col">
                   <select id="dropdown-fein30">
                     <option>Ab 1</option>
-                    <option>Ab 4</option>
-                    <option>Ab 80</option>
+                    <option>Ab 2</option>
                   </select>
                 </td>
                 <td class="innotec-col">
                   <select id="dropdown-grob60">
                     <option>Ab 1</option>
-                    <option>Ab 4</option>
-                    <option>Ab 80</option>
+                    <option>Ab 2</option>
                   </select>
                 </td>
                 <td class="competitor-col"></td>
@@ -367,33 +534,33 @@
               </tr>
               <tr>
                 <td>€ / Stk</td>
-                <td class="innotec-col" id="eurstk-1">47,70</td>
-                <td class="innotec-col" id="eurstk-2">63,80</td>
-                <td class="innotec-col" id="eurstk-3">93,80</td>
+                <td class="innotec-col" id="eurstk-1">39,90</td>
+                <td class="innotec-col" id="eurstk-2">59,90</td>
+                <td class="innotec-col" id="eurstk-3">89,90</td>
                 <td class="competitor-col" id="eurstk-4">18,20</td>
                 <td class="competitor-col"><input class="table-input" id="eurstk-5" type="text" inputmode="decimal" value="45,00" /></td>
               </tr>
               <tr>
                 <td>€ / kg</td>
-                <td class="innotec-col" id="eurkg-1">31,80</td>
-                <td class="innotec-col" id="eurkg-2">21,27</td>
-                <td class="innotec-col" id="eurkg-3">15,63</td>
+                <td class="innotec-col" id="eurkg-1">26,60</td>
+                <td class="innotec-col" id="eurkg-2">19,97</td>
+                <td class="innotec-col" id="eurkg-3">14,98</td>
                 <td class="competitor-col" id="eurkg-4">0,91</td>
                 <td class="competitor-col" id="eurkg-5">45,00</td>
               </tr>
               <tr>
                 <td>€ / L Aufnahme min.</td>
-                <td class="innotec-col" id="eurlmin-1">6,36</td>
-                <td class="innotec-col" id="eurlmin-2">4,25</td>
-                <td class="innotec-col" id="eurlmin-3">3,91</td>
+                <td class="innotec-col" id="eurlmin-1">5,32</td>
+                <td class="innotec-col" id="eurlmin-2">3,99</td>
+                <td class="innotec-col" id="eurlmin-3">3,74</td>
                 <td class="competitor-col" id="eurlmin-4">1,01</td>
                 <td class="competitor-col" id="eurlmin-5">7,50</td>
               </tr>
               <tr>
                 <td>€ / L Aufnahme max.</td>
-                <td class="innotec-col" id="eurlmax-1">3,98</td>
-                <td class="innotec-col" id="eurlmax-2">2,66</td>
-                <td class="innotec-col" id="eurlmax-3">2,48</td>
+                <td class="innotec-col" id="eurlmax-1">3,33</td>
+                <td class="innotec-col" id="eurlmax-2">2,50</td>
+                <td class="innotec-col" id="eurlmax-3">2,38</td>
                 <td class="competitor-col" id="eurlmax-4">1,01</td>
                 <td class="competitor-col" id="eurlmax-5">7,50</td>
               </tr>
@@ -410,39 +577,41 @@
               </tr>
               <tr>
                 <td>€ Bindemittel</td>
-                <td class="innotec-col" id="binde-1">39,75</td>
-                <td class="innotec-col" id="binde-2">26,58</td>
-                <td class="innotec-col" id="binde-3">24,86</td>
+                <td class="innotec-col" id="binde-1">33,25</td>
+                <td class="innotec-col" id="binde-2">24,96</td>
+                <td class="innotec-col" id="binde-3">23,78</td>
                 <td class="competitor-col" id="binde-4">10,11</td>
                 <td class="competitor-col" id="binde-5">75,15</td>
               </tr>
               <tr>
                 <td>€ Entsorgung</td>
-                <td class="innotec-col" id="ents-1">6,25</td>
-                <td class="innotec-col" id="ents-2">6,25</td>
-                <td class="innotec-col" id="ents-3">7,95</td>
+                <td class="innotec-col" id="ents-1">1,88</td>
+                <td class="innotec-col" id="ents-2">1,88</td>
+                <td class="innotec-col" id="ents-3">2,38</td>
                 <td class="competitor-col" id="ents-4">16,67</td>
                 <td class="competitor-col" id="ents-5">2,51</td>
               </tr>
               <tr class="highlight-row">
                 <td>€ gesamt</td>
-                <td class="innotec-col" id="gesamt-1">46,00</td>
-                <td class="innotec-col" id="gesamt-2">32,83</td>
-                <td class="innotec-col" id="gesamt-3">32,81</td>
+                <td class="innotec-col" id="gesamt-1">35,13</td>
+                <td class="innotec-col" id="gesamt-2">26,84</td>
+                <td class="innotec-col" id="gesamt-3">26,16</td>
                 <td class="competitor-col" id="gesamt-4">26,78</td>
                 <td class="competitor-col" id="gesamt-5">77,66</td>
               </tr>
               <tr>
                 <td>Bei 100 L Leckage</td>
-                <td class="innotec-col" id="leck-1">460,00</td>
-                <td class="innotec-col" id="leck-2">328,30</td>
-                <td class="innotec-col" id="leck-3">328,10</td>
+                <td class="innotec-col" id="leck-1">351,30</td>
+                <td class="innotec-col" id="leck-2">268,40</td>
+                <td class="innotec-col" id="leck-3">261,60</td>
                 <td class="competitor-col" id="leck-4">267,80</td>
                 <td class="competitor-col" id="leck-5">776,60</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <div class="mobile-cards" id="mobileCards"></div>
 
         <div class="share-wrap">
           <button class="share-btn" id="sharePdfBtn">Formular als PDF teilen</button>
@@ -452,35 +621,100 @@
   </div>
 
   <script>
-    const data = {
-      fein15: {
-        'Ab 1': { preisStk: 47.70, preisKg: 31.80, preisLMin: 6.36, preisLMax: 3.98, kgBedarf: 1.25, bindemittel: 39.75 },
-        'Ab 8': { preisStk: 39.80, preisKg: 26.53, preisLMin: 5.31, preisLMax: 3.32, kgBedarf: 1.25, bindemittel: 33.17 },
-        'Ab 100': { preisStk: 33.83, preisKg: 22.55, preisLMin: 4.51, preisLMax: 2.82, kgBedarf: 1.25, bindemittel: 28.19 }
+    const LEAKAGE_EXAMPLE_LITERS = 10;
+    const COMPARISON_LITERS = 100;
+    const DEFAULT_COMPETITOR_2_NAME = 'Berner Chemlock absorber';
+
+    const products = [
+      {
+        id: 1,
+        key: 'fein15',
+        name: 'Fein 1,5 kg',
+        type: 'innotec',
+        tierSelectId: 'dropdown-fein15',
+        kg: 1.5,
+        min: 5,
+        max: 8,
+        tiers: {
+          'Ab 1': 39.9,
+          'Ab 4': 29.9
+        }
       },
-      fein30: {
-        'Ab 1': { preisStk: 63.80, preisKg: 21.27, preisLMin: 4.25, preisLMax: 2.66, kgBedarf: 1.25, bindemittel: 26.58 },
-        'Ab 4': { preisStk: 59.90, preisKg: 19.97, preisLMin: 3.99, preisLMax: 2.50, kgBedarf: 1.25, bindemittel: 24.96 },
-        'Ab 80': { preisStk: 50.92, preisKg: 16.97, preisLMin: 3.39, preisLMax: 2.12, kgBedarf: 1.25, bindemittel: 21.22 }
+      {
+        id: 2,
+        key: 'fein30',
+        name: 'Fein 3,0 kg',
+        type: 'innotec',
+        tierSelectId: 'dropdown-fein30',
+        kg: 3,
+        min: 5,
+        max: 8,
+        tiers: {
+          'Ab 1': 59.9,
+          'Ab 2': 43.9
+        }
       },
-      grob60: {
-        'Ab 1': { preisStk: 93.80, preisKg: 15.63, preisLMin: 3.91, preisLMax: 2.48, kgBedarf: 1.59, bindemittel: 24.86 },
-        'Ab 4': { preisStk: 89.90, preisKg: 14.98, preisLMin: 3.75, preisLMax: 2.38, kgBedarf: 1.59, bindemittel: 23.82 },
-        'Ab 80': { preisStk: 76.42, preisKg: 12.74, preisLMin: 3.18, preisLMax: 2.02, kgBedarf: 1.59, bindemittel: 20.25 }
+      {
+        id: 3,
+        key: 'grob60',
+        name: 'Grob 6,0 kg',
+        type: 'innotec',
+        tierSelectId: 'dropdown-grob60',
+        kg: 6,
+        min: 4,
+        max: 6.3,
+        tiers: {
+          'Ab 1': 89.9,
+          'Ab 2': 69.9
+        }
       },
-      competitorFixed: {
-        adsodan: { kg: 20.00, min: 0.90, max: 0.90, preisStk: 18.20, preisKg: 0.91, preisLMin: 1.01, preisLMax: 1.01, kgBedarf: 11.11, bindemittel: 10.11 }
+      {
+        id: 4,
+        key: 'adsodan',
+        name: 'Adsodan Typ 3 rot',
+        type: 'competitor',
+        kg: 20,
+        min: 0.9,
+        max: 0.9,
+        preisStk: 18.2
+      },
+      {
+        id: 5,
+        key: 'competitor2',
+        name: DEFAULT_COMPETITOR_2_NAME,
+        type: 'competitor',
+        editable: true,
+        kg: 1,
+        min: 6,
+        max: 6,
+        preisStk: 45
       }
+    ];
+
+    const fieldLabels = {
+      kg: 'kg',
+      min: 'Aufnahme L/kg min',
+      max: 'Aufnahme L/kg max',
+      preisStk: '€ / Stk',
+      preisKg: '€ / kg',
+      preisLMin: '€ / L Aufnahme min.',
+      preisLMax: '€ / L Aufnahme max.',
+      kgBedarf: 'kg Bedarf',
+      bindemittel: '€ Bindemittel',
+      entsorgung: '€ Entsorgung',
+      gesamt: '€ gesamt',
+      leak100: 'Bei 100 L Leckage'
     };
 
-    const dropdownFein15 = document.getElementById('dropdown-fein15');
-    const dropdownFein30 = document.getElementById('dropdown-fein30');
-    const dropdownGrob60 = document.getElementById('dropdown-grob60');
-        const entsorgungskostenInput = document.getElementById('entsorgungskosten');
+    const entsorgungskostenInput = document.getElementById('entsorgungskosten');
     const sharePdfBtn = document.getElementById('sharePdfBtn');
-    const competitorInputs = ['kg-5', 'min-5', 'max-5', 'eurstk-5'].map((id) => document.getElementById(id));
+    const competitor2HeaderInput = document.getElementById('competitor2HeaderInput');
+    const mobileCards = document.getElementById('mobileCards');
 
-    const formatNumber = (value) => new Intl.NumberFormat('de-AT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+    const formatNumber = (value) => new Intl.NumberFormat('de-AT', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Number.isFinite(value) ? value : 0);
 
     const parseFormattedNumber = (value) => {
       const normalized = String(value).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
@@ -488,129 +722,309 @@
       return Number.isFinite(parsed) ? parsed : 0;
     };
 
-    const setCell = (id, value) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (el.tagName === 'INPUT') {
-        el.value = formatNumber(value);
-      } else {
-        el.textContent = formatNumber(value);
-      }
-    };
-
-    const getCellNumber = (id) => {
-      const el = document.getElementById(id);
-      if (!el) return 0;
-      return parseFormattedNumber(el.tagName === 'INPUT' ? el.value : el.textContent);
-    };
-
-    const updateProductColumn = (index, values) => {
-      setCell(`eurstk-${index}`, values.preisStk);
-      setCell(`eurkg-${index}`, values.preisKg);
-      setCell(`eurlmin-${index}`, values.preisLMin);
-      setCell(`eurlmax-${index}`, values.preisLMax);
-      setCell(`bedarf-${index}`, values.kgBedarf);
-      setCell(`binde-${index}`, values.bindemittel);
-    };
-
-    const updateFein15 = () => updateProductColumn(1, data.fein15[dropdownFein15.value]);
-    const updateFein30 = () => updateProductColumn(2, data.fein30[dropdownFein30.value]);
-    const updateGrob60 = () => updateProductColumn(3, data.grob60[dropdownGrob60.value]);
-
-    const updateMitbewerber2 = () => {
-      const competitorHeaderInput = document.getElementById('competitor2HeaderInput');
-      if (!competitorHeaderInput.value.trim()) {
-        competitorHeaderInput.value = 'Berner Chemlock absorber';
-      }
-
-      const kg = getCellNumber('kg-5');
-      const min = getCellNumber('min-5');
-      const max = getCellNumber('max-5');
-      const preisStk = getCellNumber('eurstk-5');
-      const preisKg = kg !== 0 ? preisStk / kg : 0;
-      const preisLMin = min !== 0 ? preisKg / min : 0;
-      const preisLMax = max !== 0 ? preisKg / max : 0;
-      const kgBedarf = max !== 0 ? 10 / max : 0;
-      const bindemittel = kgBedarf * preisKg;
-
-      setCell('eurkg-5', preisKg);
-      setCell('eurlmin-5', preisLMin);
-      setCell('eurlmax-5', preisLMax);
-      setCell('bedarf-5', kgBedarf);
-      setCell('binde-5', bindemittel);
-      berechneEntsorgung();
-    };
-
-    const berechneEntsorgung = () => {
-      const kosten = parseFormattedNumber(entsorgungskostenInput.value);
-      [1,2,3,4,5].forEach((index) => {
-        const kgBedarf = getCellNumber(`bedarf-${index}`);
-        const bindemittel = getCellNumber(`binde-${index}`);
-        const entsorgung = kgBedarf * kosten;
-        const gesamt = entsorgung + bindemittel;
-        setCell(`ents-${index}`, entsorgung);
-        setCell(`gesamt-${index}`, gesamt);
-        setCell(`leck-${index}`, gesamt * 10);
-      });
-    };
-
-    const applyStaticCompetitor1 = () => {
-      const c = data.competitorFixed.adsodan;
-      setCell('kg-4', c.kg);
-      setCell('min-4', c.min);
-      setCell('max-4', c.max);
-      setCell('eurstk-4', c.preisStk);
-      setCell('eurkg-4', c.preisKg);
-      setCell('eurlmin-4', c.preisLMin);
-      setCell('eurlmax-4', c.preisLMax);
-      setCell('bedarf-4', c.kgBedarf);
-      setCell('binde-4', c.bindemittel);
-    };
-
     const formatDecimalInputValue = (input) => {
       const value = input.value.replace(/[^0-9,]/g, '');
       const parts = value.split(',');
       const integerPart = (parts[0] || '').replace(/^0+(?=\d)/, '');
       const decimalPart = (parts[1] || '').slice(0, 2);
-      const formattedInt = integerPart ? new Intl.NumberFormat('de-AT', { maximumFractionDigits: 0 }).format(Number(integerPart)) : '';
+      const formattedInt = integerPart
+        ? new Intl.NumberFormat('de-AT', { maximumFractionDigits: 0 }).format(Number(integerPart))
+        : '';
+
       input.value = parts.length > 1 ? `${formattedInt},${decimalPart}` : formattedInt;
     };
 
+    const getProductById = (id) => products.find((product) => product.id === Number(id));
+
+    const calculateMetrics = (product) => {
+      const preisStk = product.tiers ? product.tiers[product.selectedTier] : product.preisStk;
+      const preisKg = product.kg !== 0 ? preisStk / product.kg : 0;
+      const preisLMin = product.min !== 0 ? preisKg / product.min : 0;
+      const preisLMax = product.max !== 0 ? preisKg / product.max : 0;
+      const kgBedarf = product.max !== 0 ? LEAKAGE_EXAMPLE_LITERS / product.max : 0;
+      const bindemittel = kgBedarf * preisKg;
+      const entsorgung = kgBedarf * state.entsorgungskosten;
+      const gesamt = bindemittel + entsorgung;
+      const leak100 = LEAKAGE_EXAMPLE_LITERS !== 0 ? gesamt * (COMPARISON_LITERS / LEAKAGE_EXAMPLE_LITERS) : 0;
+
+      return {
+        preisStk,
+        preisKg,
+        preisLMin,
+        preisLMax,
+        kgBedarf,
+        bindemittel,
+        entsorgung,
+        gesamt,
+        leak100
+      };
+    };
+
+    const state = {
+      entsorgungskosten: parseFormattedNumber(entsorgungskostenInput.value),
+      results: {}
+    };
+
+    products.forEach((product) => {
+      if (product.tiers) {
+        product.selectedTier = Object.keys(product.tiers)[0];
+      }
+    });
+
+    const renderMobileCards = () => {
+      mobileCards.innerHTML = products.map((product) => {
+        const typeLabel = product.type === 'innotec' ? 'Innotec' : 'Mitbewerber';
+        const tierControl = product.tiers
+          ? `
+            <div class="mobile-row">
+              <div class="mobile-row-label">Preis bei Menge</div>
+              <div class="mobile-row-control">
+                <select data-mobile-tier="${product.id}">
+                  ${Object.keys(product.tiers).map((tier) => `<option value="${tier}" ${tier === product.selectedTier ? 'selected' : ''}>${tier}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+          `
+          : '';
+
+        const editableName = product.editable
+          ? `
+            <div class="mobile-row">
+              <div class="mobile-row-label">Bezeichnung</div>
+              <div class="mobile-row-control">
+                <input type="text" data-mobile-header="${product.id}" value="${product.name}" />
+              </div>
+            </div>
+          `
+          : '';
+
+        const metricRow = (label, value, extraClass = '') => `
+          <div class="mobile-row ${extraClass}">
+            <div class="mobile-row-label">${label}</div>
+            <div class="mobile-row-value">${formatNumber(value)}</div>
+          </div>
+        `;
+
+        const inputRow = (key, value) => `
+          <div class="mobile-row">
+            <div class="mobile-row-label">${fieldLabels[key]}</div>
+            <div class="mobile-row-control">
+              <input type="text" inputmode="decimal" data-mobile-input="${product.id}:${key}" value="${formatNumber(value)}" />
+            </div>
+          </div>
+        `;
+
+        const result = state.results[product.id] || calculateMetrics(product);
+
+        return `
+          <section class="mobile-card ${product.type}">
+            <div class="mobile-card-header">
+              <h2>${product.name}</h2>
+              <span class="mobile-card-type">${typeLabel}</span>
+            </div>
+            <div class="mobile-card-body">
+              <div class="mobile-card-grid">
+                ${editableName}
+                ${product.editable ? inputRow('kg', product.kg) : metricRow(fieldLabels.kg, product.kg)}
+                ${product.editable ? inputRow('min', product.min) : metricRow(fieldLabels.min, product.min)}
+                ${product.editable ? inputRow('max', product.max) : metricRow(fieldLabels.max, product.max)}
+              </div>
+              <div class="mobile-section">
+                <p class="mobile-section-title">Preis & Berechnung</p>
+                <div class="mobile-card-grid">
+                  ${tierControl}
+                  ${product.editable ? inputRow('preisStk', product.preisStk) : metricRow(fieldLabels.preisStk, result.preisStk)}
+                  ${metricRow(fieldLabels.preisKg, result.preisKg)}
+                  ${metricRow(fieldLabels.preisLMin, result.preisLMin)}
+                  ${metricRow(fieldLabels.preisLMax, result.preisLMax)}
+                  ${metricRow(fieldLabels.kgBedarf, result.kgBedarf)}
+                  ${metricRow(fieldLabels.bindemittel, result.bindemittel)}
+                  ${metricRow(fieldLabels.entsorgung, result.entsorgung)}
+                  <div class="mobile-highlight ${product.type === 'competitor' ? 'competitor' : ''}">
+                    ${metricRow(fieldLabels.gesamt, result.gesamt)}
+                    ${metricRow(fieldLabels.leak100, result.leak100)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        `;
+      }).join('');
+    };
+
+    const setTableCellText = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = formatNumber(value);
+      }
+    };
+
+    const setTableInputValue = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.value = formatNumber(value);
+      }
+    };
+
+    const syncDesktopInputs = () => {
+      setTableInputValue('kg-5', getProductById(5).kg);
+      setTableInputValue('min-5', getProductById(5).min);
+      setTableInputValue('max-5', getProductById(5).max);
+      setTableInputValue('eurstk-5', getProductById(5).preisStk);
+      competitor2HeaderInput.value = getProductById(5).name;
+    };
+
+    const updateTable = () => {
+      products.forEach((product) => {
+        const result = state.results[product.id];
+
+        if (product.id === 5) {
+          setTableInputValue(`kg-${product.id}`, product.kg);
+          setTableInputValue(`min-${product.id}`, product.min);
+          setTableInputValue(`max-${product.id}`, product.max);
+          setTableInputValue(`eurstk-${product.id}`, product.preisStk);
+        } else {
+          setTableCellText(`kg-${product.id}`, product.kg);
+          setTableCellText(`min-${product.id}`, product.min);
+          setTableCellText(`max-${product.id}`, product.max);
+          setTableCellText(`eurstk-${product.id}`, result.preisStk);
+        }
+
+        setTableCellText(`eurkg-${product.id}`, result.preisKg);
+        setTableCellText(`eurlmin-${product.id}`, result.preisLMin);
+        setTableCellText(`eurlmax-${product.id}`, result.preisLMax);
+        setTableCellText(`bedarf-${product.id}`, result.kgBedarf);
+        setTableCellText(`binde-${product.id}`, result.bindemittel);
+        setTableCellText(`ents-${product.id}`, result.entsorgung);
+        setTableCellText(`gesamt-${product.id}`, result.gesamt);
+        setTableCellText(`leck-${product.id}`, result.leak100);
+      });
+    };
+
+    const recalculate = () => {
+      state.results = {};
+      products.forEach((product) => {
+        state.results[product.id] = calculateMetrics(product);
+      });
+      updateTable();
+      renderMobileCards();
+    };
+
+    const handleCompetitor2HeaderChange = (value, options = {}) => {
+      const product = getProductById(5);
+      product.name = value.trim() || DEFAULT_COMPETITOR_2_NAME;
+      competitor2HeaderInput.value = product.name;
+      if (options.skipMobileRender) {
+        return;
+      }
+      recalculate();
+    };
+
+    const handleEditableNumberChange = (productId, key, rawValue, finalize = false, options = {}) => {
+      const product = getProductById(productId);
+      product[key] = parseFormattedNumber(rawValue);
+      if (finalize) {
+        recalculate();
+      } else {
+        state.results[product.id] = calculateMetrics(product);
+        updateTable();
+        if (!options.skipMobileRender) {
+          renderMobileCards();
+        }
+      }
+    };
+
+    document.getElementById('dropdown-fein15').addEventListener('change', (event) => {
+      getProductById(1).selectedTier = event.target.value;
+      recalculate();
+    });
+
+    document.getElementById('dropdown-fein30').addEventListener('change', (event) => {
+      getProductById(2).selectedTier = event.target.value;
+      recalculate();
+    });
+
+    document.getElementById('dropdown-grob60').addEventListener('change', (event) => {
+      getProductById(3).selectedTier = event.target.value;
+      recalculate();
+    });
+
+    competitor2HeaderInput.addEventListener('input', (event) => {
+      handleCompetitor2HeaderChange(event.target.value);
+    });
+
+    ['kg-5', 'min-5', 'max-5', 'eurstk-5'].forEach((id) => {
+      const input = document.getElementById(id);
+      input.addEventListener('input', () => {
+        formatDecimalInputValue(input);
+        const key = id === 'eurstk-5' ? 'preisStk' : id.split('-')[0];
+        handleEditableNumberChange(5, key, input.value);
+      });
+      input.addEventListener('blur', () => {
+        input.value = formatNumber(parseFormattedNumber(input.value));
+        const key = id === 'eurstk-5' ? 'preisStk' : id.split('-')[0];
+        handleEditableNumberChange(5, key, input.value, true);
+      });
+    });
+
     entsorgungskostenInput.addEventListener('input', () => {
       formatDecimalInputValue(entsorgungskostenInput);
-      berechneEntsorgung();
+      state.entsorgungskosten = parseFormattedNumber(entsorgungskostenInput.value);
+      recalculate();
     });
 
     entsorgungskostenInput.addEventListener('blur', () => {
       entsorgungskostenInput.value = formatNumber(parseFormattedNumber(entsorgungskostenInput.value));
-      berechneEntsorgung();
+      state.entsorgungskosten = parseFormattedNumber(entsorgungskostenInput.value);
+      recalculate();
     });
 
-    dropdownFein15.addEventListener('change', () => { updateFein15(); berechneEntsorgung(); });
-    dropdownFein30.addEventListener('change', () => { updateFein30(); berechneEntsorgung(); });
-    dropdownGrob60.addEventListener('change', () => { updateGrob60(); berechneEntsorgung(); });
+    mobileCards.addEventListener('input', (event) => {
+      const tierId = event.target.dataset.mobileTier;
+      const mobileInput = event.target.dataset.mobileInput;
+      const mobileHeader = event.target.dataset.mobileHeader;
 
-        competitorInputs.forEach((input) => {
-      input.addEventListener('input', () => {
-        formatDecimalInputValue(input);
-        updateMitbewerber2();
-      });
-      input.addEventListener('blur', () => {
-        input.value = formatNumber(parseFormattedNumber(input.value));
-        updateMitbewerber2();
-      });
+      if (tierId) {
+        getProductById(tierId).selectedTier = event.target.value;
+        const desktopSelect = document.getElementById(getProductById(tierId).tierSelectId);
+        if (desktopSelect) {
+          desktopSelect.value = event.target.value;
+        }
+        recalculate();
+        return;
+      }
+
+      if (mobileHeader) {
+        handleCompetitor2HeaderChange(event.target.value, { skipMobileRender: true });
+        return;
+      }
+
+      if (mobileInput) {
+        formatDecimalInputValue(event.target);
+        const [productId, key] = mobileInput.split(':');
+        handleEditableNumberChange(Number(productId), key, event.target.value, false, { skipMobileRender: true });
+      }
     });
 
-    updateFein15();
-    updateFein30();
-    updateGrob60();
-    applyStaticCompetitor1();
-    entsorgungskostenInput.value = formatNumber(parseFormattedNumber(entsorgungskostenInput.value));
-    competitorInputs.forEach((input) => {
-      input.value = formatNumber(parseFormattedNumber(input.value));
-    });
-    updateMitbewerber2();
-    berechneEntsorgung();
+    mobileCards.addEventListener('blur', (event) => {
+      const mobileInput = event.target.dataset.mobileInput;
+      const mobileHeader = event.target.dataset.mobileHeader;
+
+      if (mobileHeader) {
+        handleCompetitor2HeaderChange(event.target.value);
+        return;
+      }
+
+      if (mobileInput) {
+        event.target.value = formatNumber(parseFormattedNumber(event.target.value));
+        const [productId, key] = mobileInput.split(':');
+        handleEditableNumberChange(Number(productId), key, event.target.value, true);
+      }
+    }, true);
+
+    syncDesktopInputs();
+    entsorgungskostenInput.value = formatNumber(state.entsorgungskosten);
+    recalculate();
 
     sharePdfBtn.addEventListener('click', async () => {
       const content = document.getElementById('pdfContent');
