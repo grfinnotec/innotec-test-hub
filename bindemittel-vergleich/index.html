@@ -166,13 +166,17 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(280px, 1fr));
       gap: 20px;
+      align-items: stretch;
     }
 
     .result-card {
+      height: 100%;
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid var(--border);
       background: white;
+      display: flex;
+      flex-direction: column;
     }
 
     .result-card.highlight {
@@ -187,8 +191,10 @@
     }
 
     .result-body {
+      flex: 1;
       padding: 18px 20px 20px;
       display: grid;
+      align-content: start;
       gap: 12px;
       overflow: hidden;
     }
@@ -212,6 +218,91 @@
       padding-top: 12px;
       border-top: 1px dashed rgba(31, 41, 55, 0.18);
       font-weight: 800;
+    }
+
+    .mineral-result-row {
+      grid-template-columns: minmax(120px, 1fr) minmax(96px, auto);
+    }
+
+    .manual-panel {
+      margin-top: 8px;
+      padding: 14px;
+      border: 1px solid rgba(224, 184, 0, 0.42);
+      border-radius: 14px;
+      background: #fffdf5;
+      display: grid;
+      gap: 12px;
+    }
+
+    .manual-panel-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(224, 184, 0, 0.28);
+    }
+
+    .manual-panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .manual-panel-note {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .manual-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .manual-field {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+    }
+
+    .manual-field label {
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .manual-control {
+      position: relative;
+    }
+
+    .manual-control::before {
+      content: '€';
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .manual-control input {
+      height: 40px;
+      min-width: 0;
+      padding: 9px 10px 9px 28px;
+      border-radius: 11px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .manual-control input.has-manual-value {
+      border-color: var(--primary-dark);
+      background: #fff8d6;
     }
 
     .label-text {
@@ -297,6 +388,28 @@
         text-align: left;
         min-width: 0;
       }
+
+      .mineral-result-row {
+        grid-template-columns: 1fr;
+      }
+
+      .manual-panel-head {
+        display: grid;
+        gap: 3px;
+      }
+
+      .manual-panel-note {
+        text-align: left;
+        white-space: normal;
+      }
+
+      .manual-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .manual-control input {
+        text-align: left;
+      }
     }
 
     @media print {
@@ -346,11 +459,36 @@
           <section class="result-card" id="card-mineral">
             <div class="result-header">Mineralisches Bindemittel</div>
             <div class="result-body">
-              <div class="row"><span class="label-text">Materialkosten</span><span class="value" id="mat_mineral"></span><span class="saving"></span></div>
-              <div class="row"><span class="label-text">Weitere Kosten</span><span class="value" id="weitere_mineral"></span><span class="saving"></span></div>
-              <div class="row"><span class="label-text">Arbeitskosten</span><span class="value" id="arbeit_mineral"></span><span class="saving"></span></div>
-              <div class="row"><span class="label-text">Entsorgungskosten</span><span class="value" id="entsorgung_mineral"></span><span class="saving"></span></div>
-              <div class="row total"><span class="label-text">Gesamtkosten</span><span class="value" id="gesamt_mineral"></span><span class="saving"></span></div>
+              <div class="row mineral-result-row"><span class="label-text">Materialkosten</span><span class="value" id="mat_mineral"></span></div>
+              <div class="row mineral-result-row"><span class="label-text">Weitere Kosten</span><span class="value" id="weitere_mineral"></span></div>
+              <div class="row mineral-result-row"><span class="label-text">Arbeitskosten</span><span class="value" id="arbeit_mineral"></span></div>
+              <div class="row mineral-result-row"><span class="label-text">Entsorgungskosten</span><span class="value" id="entsorgung_mineral"></span></div>
+              <div class="row total mineral-result-row"><span class="label-text">Gesamtkosten</span><span class="value" id="gesamt_mineral"></span></div>
+
+              <div class="manual-panel">
+                <div class="manual-panel-head">
+                  <span class="manual-panel-title">Manuelle Anpassungen</span>
+                  <span class="manual-panel-note">Leer = Standardwert</span>
+                </div>
+                <div class="manual-grid">
+                  <div class="manual-field">
+                    <label for="manual_mat_mineral">Materialkosten</label>
+                    <div class="manual-control"><input id="manual_mat_mineral" data-mineral-override="material" type="text" inputmode="decimal" placeholder="Standard" /></div>
+                  </div>
+                  <div class="manual-field">
+                    <label for="manual_weitere_mineral">Weitere Kosten</label>
+                    <div class="manual-control"><input id="manual_weitere_mineral" data-mineral-override="weitere" type="text" inputmode="decimal" placeholder="Standard" /></div>
+                  </div>
+                  <div class="manual-field">
+                    <label for="manual_arbeit_mineral">Arbeitskosten</label>
+                    <div class="manual-control"><input id="manual_arbeit_mineral" data-mineral-override="arbeit" type="text" inputmode="decimal" placeholder="Standard" /></div>
+                  </div>
+                  <div class="manual-field">
+                    <label for="manual_entsorgung_mineral">Entsorgungskosten</label>
+                    <div class="manual-control"><input id="manual_entsorgung_mineral" data-mineral-override="entsorgung" type="text" inputmode="decimal" placeholder="Standard" /></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -425,6 +563,7 @@
     const literInput = document.getElementById('liter');
     const calcBtn = document.getElementById('calcBtn');
     const sharePdfBtn = document.getElementById('sharePdfBtn');
+    const mineralOverrideInputs = Array.from(document.querySelectorAll('[data-mineral-override]'));
 
     function getWert(liter, schwellen, arr) {
       for (let i = schwellen.length - 1; i >= 0; i--) {
@@ -485,6 +624,18 @@
       el.className = 'saving ' + (isBetter ? 'green' : 'red');
     };
 
+    const getManualCost = (key, fallbackValue) => {
+      const input = mineralOverrideInputs.find((el) => el.dataset.mineralOverride === key);
+      if (!input || input.value.trim() === '') return fallbackValue;
+      return parseFormattedNumber(input.value);
+    };
+
+    const updateManualInputState = () => {
+      mineralOverrideInputs.forEach((input) => {
+        input.classList.toggle('has-manual-value', input.value.trim() !== '');
+      });
+    };
+
     function calculate() {
       const entsorgung_gefährlich = 0.93;
       const lagerkosten_kg = 0.03;
@@ -504,14 +655,19 @@
       const preis_pro_sack = 39.90;
       const preis_pro_kg = preis_pro_sack / 20.0;
       const menge_mineral = liter / aufnahme_mineral;
-      const mat_m = menge_mineral * preis_pro_kg;
-      const weit_m = menge_mineral * (lagerkosten_kg + transport_beschaffung);
-      const arbeit_m = arbeitskosten_mineral;
+      const mat_m_standard = menge_mineral * preis_pro_kg;
+      const weit_m_standard = menge_mineral * (lagerkosten_kg + transport_beschaffung);
+      const arbeit_m_standard = arbeitskosten_mineral;
       const gesamtmasse_mineral = menge_mineral + liter;
       const entsorgungskosten_mineral = gesamtmasse_mineral * entsorgung_gefährlich;
       const entsorgung_transport_mineral = gesamtmasse_mineral * transport_entsorgung;
-      const entsorg = entsorgungskosten_mineral + entsorgung_transport_mineral;
+      const entsorg_standard = entsorgungskosten_mineral + entsorgung_transport_mineral;
+      const mat_m = getManualCost('material', mat_m_standard);
+      const weit_m = getManualCost('weitere', weit_m_standard);
+      const arbeit_m = getManualCost('arbeit', arbeit_m_standard);
+      const entsorg = getManualCost('entsorgung', entsorg_standard);
       const gesamt_m = mat_m + weit_m + arbeit_m + entsorg;
+      updateManualInputState();
 
       setText('mat_mineral', formatCurrency(mat_m));
       setText('weitere_mineral', formatCurrency(weit_m));
@@ -600,6 +756,16 @@
     });
 
     calcBtn.addEventListener('click', calculate);
+
+    mineralOverrideInputs.forEach((input) => {
+      input.addEventListener('input', calculate);
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          calculate();
+        }
+      });
+    });
 
     window.addEventListener('load', calculate);
 
