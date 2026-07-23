@@ -1032,18 +1032,46 @@
     entsorgungskostenInput.value = formatNumber(state.entsorgungskosten);
     recalculate();
 
+    const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    const waitForPaint = () => new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+
     sharePdfBtn.addEventListener('click', async () => {
       const content = document.getElementById('pdfContent');
       const filename = 'Liter-Kostenvergleich.pdf';
+      const ios = isIOS();
 
       try {
         sharePdfBtn.disabled = true;
         sharePdfBtn.textContent = 'PDF wird erstellt...';
 
+        // FileMaker Go / iOS has a much smaller canvas memory limit than desktop
+        // browsers. Render the compact table view at normal resolution there.
+        await waitForPaint();
+
         const canvas = await html2canvas(content, {
-          scale: 2,
+          scale: ios ? 1 : 2,
           useCORS: true,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          logging: false,
+          imageTimeout: ios ? 3000 : 15000,
+          windowWidth: ios ? 1200 : window.innerWidth,
+          onclone: (clonedDocument) => {
+            if (!ios) return;
+
+            const clonedContent = clonedDocument.getElementById('pdfContent');
+            const tableWrap = clonedDocument.querySelector('.table-wrap');
+            const mobileCards = clonedDocument.getElementById('mobileCards');
+
+            // The mobile cards make the captured canvas several times higher.
+            // The desktop table is both shorter and easier to read in a PDF.
+            if (clonedContent) clonedContent.style.width = '1160px';
+            if (tableWrap) tableWrap.style.display = 'block';
+            if (mobileCards) mobileCards.style.display = 'none';
+          }
         });
 
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
