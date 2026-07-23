@@ -1035,6 +1035,10 @@
     const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent)
       || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+    // On iOS, keep the completed PDF until the user taps again. The second tap
+    // is a direct user action, which Safari requires before it opens the share sheet.
+    let pendingPdfFile = null;
+
     const waitForPaint = () => new Promise((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(resolve));
     });
@@ -1043,6 +1047,34 @@
       const content = document.getElementById('pdfContent');
       const filename = 'Liter-Kostenvergleich.pdf';
       const ios = isIOS();
+
+      if (pendingPdfFile) {
+        try {
+          const shareData = {
+            files: [pendingPdfFile],
+            title: 'Liter-Kostenvergleich'
+          };
+
+          if (!navigator.canShare || !navigator.canShare({ files: shareData.files })) {
+            throw new Error('Das Teilen von PDF-Dateien wird auf diesem Gerät nicht unterstützt.');
+          }
+
+          await navigator.share(shareData);
+          pendingPdfFile = null;
+          sharePdfBtn.textContent = 'Formular als PDF teilen';
+        } catch (error) {
+          // Canceling the iOS share sheet is not an error. Keep the PDF ready
+          // so that the user can simply tap the button again.
+          if (error.name !== 'AbortError') {
+            console.error('PDF konnte nicht geteilt werden:', error);
+            alert('Die PDF ist fertig erstellt, kann auf diesem Gerät aber nicht direkt geteilt werden.');
+          }
+          sharePdfBtn.textContent = 'PDF fertig – zum Teilen tippen';
+        }
+        return;
+      }
+
+      let pdfReadyForSharing = false;
 
       try {
         sharePdfBtn.disabled = true;
@@ -1059,6 +1091,8 @@
           logging: false,
           imageTimeout: ios ? 3000 : 15000,
           windowWidth: ios ? 1200 : window.innerWidth,
+          // The action button belongs to the web form, not to the PDF itself.
+          ignoreElements: (element) => element.classList?.contains('share-wrap'),
           onclone: (clonedDocument) => {
             if (!ios) return;
 
@@ -1099,13 +1133,32 @@
           }
         }
 
-        pdf.save(filename);
+        if (ios && typeof File !== 'undefined' && navigator.canShare) {
+          const pdfBlob = pdf.output('blob');
+          const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+          if (navigator.canShare({ files: [pdfFile] })) {
+            pendingPdfFile = pdfFile;
+            pdfReadyForSharing = true;
+            sharePdfBtn.textContent = 'PDF fertig – zum Teilen tippen';
+            return;
+          }
+        }
+
+        if (ios) {
+          // Fallback for older iOS versions: open the generated PDF for preview.
+          window.location.href = pdf.output('datauristring');
+        } else {
+          pdf.save(filename);
+        }
       } catch (error) {
         console.error('PDF-Erstellung fehlgeschlagen:', error);
         alert('Die PDF-Erstellung hat leider nicht funktioniert. Bitte die Seite neu laden und erneut probieren.');
       } finally {
         sharePdfBtn.disabled = false;
-        sharePdfBtn.textContent = 'Formular als PDF teilen';
+        if (!pdfReadyForSharing) {
+          sharePdfBtn.textContent = 'Formular als PDF teilen';
+        }
       }
     });
   </script>
