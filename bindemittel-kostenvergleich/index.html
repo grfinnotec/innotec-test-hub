@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -614,7 +615,7 @@
         <div class="mobile-cards" id="mobileCards"></div>
 
         <div class="share-wrap">
-          <button class="share-btn" id="sharePdfBtn">Formular als PDF teilen</button>
+          <button class="share-btn" id="sharePdfBtn" type="button">PDF teilen</button>
         </div>
       </div>
     </div>
@@ -1032,133 +1033,89 @@
     entsorgungskostenInput.value = formatNumber(state.entsorgungskosten);
     recalculate();
 
-    const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent)
-      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-    // On iOS, keep the completed PDF until the user taps again. The second tap
-    // is a direct user action, which Safari requires before it opens the share sheet.
-    let pendingPdfFile = null;
-
-    const waitForPaint = () => new Promise((resolve) => {
-      requestAnimationFrame(() => requestAnimationFrame(resolve));
-    });
-
-    sharePdfBtn.addEventListener('click', async () => {
-      const content = document.getElementById('pdfContent');
-      const filename = 'Liter-Kostenvergleich.pdf';
-      const ios = isIOS();
-
-      if (pendingPdfFile) {
-        try {
-          const shareData = {
-            files: [pendingPdfFile],
-            title: 'Liter-Kostenvergleich'
-          };
-
-          if (!navigator.canShare || !navigator.canShare({ files: shareData.files })) {
-            throw new Error('Das Teilen von PDF-Dateien wird auf diesem Gerät nicht unterstützt.');
-          }
-
-          await navigator.share(shareData);
-          pendingPdfFile = null;
-          sharePdfBtn.textContent = 'Formular als PDF teilen';
-        } catch (error) {
-          // Canceling the iOS share sheet is not an error. Keep the PDF ready
-          // so that the user can simply tap the button again.
-          if (error.name !== 'AbortError') {
-            console.error('PDF konnte nicht geteilt werden:', error);
-            alert('Die PDF ist fertig erstellt, kann auf diesem Gerät aber nicht direkt geteilt werden.');
-          }
-          sharePdfBtn.textContent = 'PDF fertig – zum Teilen tippen';
-        }
-        return;
+    async function createPdf() {
+      if (!window.jspdf || !window.jspdf.jsPDF || !window.html2canvas) {
+        throw new Error('Die PDF-Bibliothek wurde nicht geladen.');
       }
 
-      let pdfReadyForSharing = false;
+      const content = document.getElementById('pdfContent');
+      const canvas = await html2canvas(content, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        onclone: (clonedDocument) => {
+          const logo = clonedDocument.querySelector('.brand-logo');
+          if (logo) logo.remove();
 
+          // Die PDF bleibt auch vom iPhone aus kompakt: Sie verwendet die
+          // vollständige Vergleichstabelle in einer A4-Queransicht.
+          const printStyle = clonedDocument.createElement('style');
+          printStyle.textContent = `
+            html, body { width: 1200px !important; min-width: 1200px !important; padding: 0 !important; }
+            .container, #pdfContent { max-width: 1200px !important; width: 1200px !important; }
+            .header, .content { padding-left: 28px !important; padding-right: 28px !important; }
+            .table-wrap { display: block !important; overflow: visible !important; }
+            .mobile-cards, .share-wrap { display: none !important; }
+          `;
+          clonedDocument.head.appendChild(printStyle);
+        }
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 8;
+      const usableWidth = pageWidth - margin * 2;
+      const usableHeight = pageHeight - margin * 2;
+      const imageHeightAtFullWidth = canvas.height * usableWidth / canvas.width;
+      const scale = Math.min(1, usableHeight / imageHeightAtFullWidth);
+      const renderedWidth = usableWidth * scale;
+      const renderedHeight = imageHeightAtFullWidth * scale;
+      pdf.addImage(
+        imgData,
+        'JPEG',
+        (pageWidth - renderedWidth) / 2,
+        (pageHeight - renderedHeight) / 2,
+        renderedWidth,
+        renderedHeight
+      );
+      return pdf;
+    }
+
+    function downloadPdf(pdf, filename) {
+      const url = URL.createObjectURL(pdf.output('blob'));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    sharePdfBtn.addEventListener('click', async () => {
+      const filename = 'Liter-Kostenvergleich.pdf';
       try {
         sharePdfBtn.disabled = true;
-        sharePdfBtn.textContent = 'PDF wird erstellt...';
+        const pdf = await createPdf();
+        sharePdfBtn.textContent = 'PDF wird vorbereitet…';
+        const file = new File([pdf.output('blob')], filename, { type: 'application/pdf' });
+        const shareData = { files: [file], title: 'Liter-Kostenvergleich' };
 
-        // FileMaker Go / iOS has a much smaller canvas memory limit than desktop
-        // browsers. Render the compact table view at normal resolution there.
-        await waitForPaint();
-
-        const canvas = await html2canvas(content, {
-          scale: ios ? 1 : 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          imageTimeout: ios ? 3000 : 15000,
-          windowWidth: ios ? 1200 : window.innerWidth,
-          // The action button belongs to the web form, not to the PDF itself.
-          ignoreElements: (element) => element.classList?.contains('share-wrap'),
-          onclone: (clonedDocument) => {
-            if (!ios) return;
-
-            const clonedContent = clonedDocument.getElementById('pdfContent');
-            const tableWrap = clonedDocument.querySelector('.table-wrap');
-            const mobileCards = clonedDocument.getElementById('mobileCards');
-
-            // The mobile cards make the captured canvas several times higher.
-            // The desktop table is both shorter and easier to read in a PDF.
-            if (clonedContent) clonedContent.style.width = '1160px';
-            if (tableWrap) tableWrap.style.display = 'block';
-            if (mobileCards) mobileCards.style.display = 'none';
-          }
-        });
-
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 8;
-        const usableWidth = pageWidth - margin * 2;
-        const imgHeight = canvas.height * usableWidth / canvas.width;
-
-        if (imgHeight <= pageHeight - margin * 2) {
-          pdf.addImage(imgData, 'JPEG', margin, margin, usableWidth, imgHeight);
+        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+          await navigator.share(shareData);
         } else {
-          let heightLeft = imgHeight;
-          let position = margin;
-          pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
-          heightLeft -= (pageHeight - margin * 2);
-
-          while (heightLeft > 0) {
-            position = heightLeft - imgHeight + margin;
-            pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
-            heightLeft -= (pageHeight - margin * 2);
-          }
-        }
-
-        if (ios && typeof File !== 'undefined' && navigator.canShare) {
-          const pdfBlob = pdf.output('blob');
-          const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
-
-          if (navigator.canShare({ files: [pdfFile] })) {
-            pendingPdfFile = pdfFile;
-            pdfReadyForSharing = true;
-            sharePdfBtn.textContent = 'PDF fertig – zum Teilen tippen';
-            return;
-          }
-        }
-
-        if (ios) {
-          // Fallback for older iOS versions: open the generated PDF for preview.
-          window.location.href = pdf.output('datauristring');
-        } else {
-          pdf.save(filename);
+          downloadPdf(pdf, filename);
         }
       } catch (error) {
+        if (error && error.name === 'AbortError') return;
         console.error('PDF-Erstellung fehlgeschlagen:', error);
-        alert('Die PDF-Erstellung hat leider nicht funktioniert. Bitte die Seite neu laden und erneut probieren.');
+        alert('Die PDF konnte nicht erstellt werden. Bitte die Seite neu laden und erneut probieren.');
       } finally {
         sharePdfBtn.disabled = false;
-        if (!pdfReadyForSharing) {
-          sharePdfBtn.textContent = 'Formular als PDF teilen';
-        }
+        sharePdfBtn.textContent = 'PDF teilen';
       }
     });
   </script>
