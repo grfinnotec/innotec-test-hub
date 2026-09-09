@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -518,7 +519,7 @@
         </div>
 
         <div class="share-wrap">
-          <button class="share-btn" id="sharePdfBtn" type="button">Formular als PDF teilen</button>
+          <button class="share-btn" id="sharePdfBtn" type="button">PDF teilen</button>
         </div>
       </div>
     </div>
@@ -769,52 +770,99 @@
 
     window.addEventListener('load', calculate);
 
-    sharePdfBtn.addEventListener('click', async () => {
-      const content = document.getElementById('pdfContent');
-      const filename = 'Bindemittel-Kostenrechner.pdf';
+    async function createPdf() {
+      if (!window.jspdf || !window.jspdf.jsPDF || !window.html2canvas) {
+        throw new Error('Die PDF-Bibliothek wurde nicht geladen.');
+      }
 
+      const content = document.getElementById('pdfContent');
+      const canvas = await html2canvas(content, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        // Das externe SVG-Logo kann im FileMaker-Go-Web-Viewer keine CORS-Freigabe
+        // liefern. Ohne das Logo bleibt der Export zuverlässig und entspricht
+        // ansonsten exakt der sichtbaren Berechnung.
+        onclone: (clonedDocument) => {
+          const logo = clonedDocument.querySelector('.brand-logo');
+          if (logo) logo.remove();
+
+          // Die Ansicht auf dem iPhone ist einspaltig. Für die PDF erzwingen wir
+          // eine kompakte A4-Queransicht, damit keine Ergebnis-Karte über einen
+          // Seitenumbruch hinweg abgeschnitten wird.
+          const printStyle = clonedDocument.createElement('style');
+          printStyle.textContent = `
+            html, body { width: 1120px !important; min-width: 1120px !important; padding: 0 !important; }
+            .container { max-width: 1120px !important; width: 1120px !important; }
+            .header, .content { padding-left: 28px !important; padding-right: 28px !important; }
+            .input-grid { grid-template-columns: minmax(240px, 1fr) 180px auto !important; }
+            .cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 18px !important; }
+            .result-header { font-size: 20px !important; }
+            .result-body { padding: 16px !important; }
+            .row { grid-template-columns: minmax(0, 1fr) auto auto !important; gap: 8px !important; }
+            .manual-panel { padding: 12px !important; }
+            .share-wrap { display: none !important; }
+          `;
+          clonedDocument.head.appendChild(printStyle);
+        }
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 8;
+      const usableWidth = pageWidth - margin * 2;
+      const imgHeight = canvas.height * usableWidth / canvas.width;
+
+      const usableHeight = pageHeight - margin * 2;
+      const scale = Math.min(1, usableHeight / imgHeight);
+      const renderedWidth = usableWidth * scale;
+      const renderedHeight = imgHeight * scale;
+      const x = (pageWidth - renderedWidth) / 2;
+      const y = (pageHeight - renderedHeight) / 2;
+      pdf.addImage(imgData, 'JPEG', x, y, renderedWidth, renderedHeight);
+      return pdf;
+    }
+
+    function downloadPdf(pdf, filename) {
+      const url = URL.createObjectURL(pdf.output('blob'));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    sharePdfBtn.addEventListener('click', async () => {
+      const filename = 'Bindemittel-Kostenrechner.pdf';
       try {
         sharePdfBtn.disabled = true;
-        sharePdfBtn.textContent = 'PDF wird erstellt...';
+        const pdf = await createPdf();
+        sharePdfBtn.textContent = 'PDF wird vorbereitet…';
+        const blob = pdf.output('blob');
+        const file = new File([blob], filename, { type: 'application/pdf' });
+        const shareData = { files: [file], title: 'Bindemittel-Kostenrechner' };
 
-        const canvas = await html2canvas(content, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff'
-        });
-
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 8;
-        const usableWidth = pageWidth - margin * 2;
-        const imgHeight = canvas.height * usableWidth / canvas.width;
-
-        if (imgHeight <= pageHeight - margin * 2) {
-          pdf.addImage(imgData, 'JPEG', margin, margin, usableWidth, imgHeight);
+        // FileMaker Go verwendet auf iOS einen Web Viewer. Dort werden Browser-
+        // Downloads (pdf.save) nicht an die Dateien-App weitergegeben. Das native
+        // iOS-Teilen ist der zuverlässige Weg zu Mail, WhatsApp und "In Dateien".
+        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+          await navigator.share(shareData);
         } else {
-          let heightLeft = imgHeight;
-          let position = margin;
-          pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
-          heightLeft -= (pageHeight - margin * 2);
-
-          while (heightLeft > 0) {
-            position = heightLeft - imgHeight + margin;
-            pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
-            heightLeft -= (pageHeight - margin * 2);
-          }
+          // Desktop-Browser: normal in den Downloads-Ordner speichern.
+          downloadPdf(pdf, filename);
         }
-
-        pdf.save(filename);
       } catch (error) {
+        if (error && error.name === 'AbortError') return; // Teilen wurde bewusst abgebrochen.
         console.error('PDF-Erstellung fehlgeschlagen:', error);
-        alert('Die PDF-Erstellung hat leider nicht funktioniert. Bitte die Seite neu laden und erneut probieren.');
+        alert('Die PDF konnte nicht erstellt werden. Bitte die Seite neu laden und erneut probieren.');
       } finally {
         sharePdfBtn.disabled = false;
-        sharePdfBtn.textContent = 'Formular als PDF teilen';
+        sharePdfBtn.textContent = 'PDF teilen';
       }
     });
   </script>
